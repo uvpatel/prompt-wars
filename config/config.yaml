@@ -1,0 +1,12 @@
+# Application Configuration
+# --------------------------
+# Environment-specific values should be set via .env.local
+
+app:
+  name: "Prompt Wars"
+  description: "AI-Powered Anomaly Detection System"
+  version: "1.0.0"
+
+database:
+  # Set MONGODB_URI in your .env.local file
+  name: "prompt-wars"
