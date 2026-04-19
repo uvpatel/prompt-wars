@@ -1,34 +1,25 @@
-// db/connection.ts
 import { MongoClient } from "mongodb";
 
 const uri = process.env.MONGODB_URI!;
-const client = new MongoClient(uri);
-let connectPromise: Promise<MongoClient> | null = null;
 
-export async function connectMongoClient() {
-    if (!connectPromise) {
-        connectPromise = client.connect().then((connectedClient) => {
-            console.log("MongoDB Client connected");
-            return connectedClient;
-        });
-    }
-
-    return connectPromise;
-}
-
-// db/mongoose.ts
-import mongoose from "mongoose";
-
-const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI!);
-        console.log("Mongoose connected");
-    } catch (error) {
-        console.error("Mongoose error:", error);
-        process.exit(1);
-    }
+// Cache the client on globalThis to prevent multiple connections
+// during Next.js hot-reload in development mode.
+const globalForMongo = globalThis as typeof globalThis & {
+  _mongoClient?: MongoClient;
+  _mongoConnectPromise?: Promise<MongoClient>;
 };
 
-export default connectDB;
+const client = globalForMongo._mongoClient ?? new MongoClient(uri);
+
+if (process.env.NODE_ENV !== "production") {
+  globalForMongo._mongoClient = client;
+}
+
+export async function connectMongoClient(): Promise<MongoClient> {
+  if (!globalForMongo._mongoConnectPromise) {
+    globalForMongo._mongoConnectPromise = client.connect();
+  }
+  return globalForMongo._mongoConnectPromise;
+}
 
 export { client };

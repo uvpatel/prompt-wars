@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-import { z } from "zod"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
@@ -35,7 +34,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { TrendingUpIcon } from "lucide-react"
 
-import { schema, type Schema } from "./schema"
+import { type Schema } from "./schema"
 
 const chartData = [
   { month: "January", desktop: 186, mobile: 80 },
