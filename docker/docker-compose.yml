@@ -1,0 +1,11 @@
+services:
+ app:
+	 build:
+		context: ..
+		dockerfile: docker/Dockerfile
+		 environment:
+			GEMINI_API_KEY: ${GEMINI_API_KEY}
+			GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3-flash-preview}
+			PROMPT: ${PROMPT:-Explain to me how AI works}
+		stdin_open: true
+	  tty: true
