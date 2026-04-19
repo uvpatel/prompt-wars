@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { type ColumnDef } from "@tanstack/react-table"
+import { type ColumnDef, type Row } from "@tanstack/react-table"
 import { toast } from "sonner"
 import {
   GripVerticalIcon,
@@ -53,6 +53,30 @@ function DragHandle() {
       <GripVerticalIcon className="size-3 text-muted-foreground" />
       <span className="sr-only">Drag to reorder</span>
     </Button>
+  )
+}
+
+const EditableNumberCell = ({ row, accessorKey }: { row: Row<Schema>, accessorKey: "target" | "limit" }) => {
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
+          loading: `Saving ${row.original.header}`,
+          success: "Done",
+          error: "Error",
+        })
+      }}
+    >
+      <Label htmlFor={`${row.original.id}-${accessorKey}`} className="sr-only">
+        {accessorKey.charAt(0).toUpperCase() + accessorKey.slice(1)}
+      </Label>
+      <Input
+        className="h-8 w-16 border-transparent bg-transparent text-right shadow-none hover:bg-input/30 focus-visible:border focus-visible:bg-background dark:bg-transparent dark:hover:bg-input/30 dark:focus-visible:bg-input/30"
+        defaultValue={row.original[accessorKey as keyof Schema]}
+        id={`${row.original.id}-${accessorKey}`}
+      />
+    </form>
   )
 }
 
@@ -124,52 +148,12 @@ export const columns: ColumnDef<Schema>[] = [
   {
     accessorKey: "target",
     header: () => <div className="w-full text-right">Target</div>,
-    cell: ({ row }) => (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.header}`,
-            success: "Done",
-            error: "Error",
-          })
-        }}
-      >
-        <Label htmlFor={`${row.original.id}-target`} className="sr-only">
-          Target
-        </Label>
-        <Input
-          className="h-8 w-16 border-transparent bg-transparent text-right shadow-none hover:bg-input/30 focus-visible:border focus-visible:bg-background dark:bg-transparent dark:hover:bg-input/30 dark:focus-visible:bg-input/30"
-          defaultValue={row.original.target}
-          id={`${row.original.id}-target`}
-        />
-      </form>
-    ),
+    cell: ({ row }) => <EditableNumberCell row={row} accessorKey="target" />,
   },
   {
     accessorKey: "limit",
     header: () => <div className="w-full text-right">Limit</div>,
-    cell: ({ row }) => (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.header}`,
-            success: "Done",
-            error: "Error",
-          })
-        }}
-      >
-        <Label htmlFor={`${row.original.id}-limit`} className="sr-only">
-          Limit
-        </Label>
-        <Input
-          className="h-8 w-16 border-transparent bg-transparent text-right shadow-none hover:bg-input/30 focus-visible:border focus-visible:bg-background dark:bg-transparent dark:hover:bg-input/30 dark:focus-visible:bg-input/30"
-          defaultValue={row.original.limit}
-          id={`${row.original.id}-limit`}
-        />
-      </form>
-    ),
+    cell: ({ row }) => <EditableNumberCell row={row} accessorKey="limit" />,
   },
   {
     accessorKey: "reviewer",
